@@ -1,0 +1,15 @@
+{
+    "name": "magnifyall",
+    "description": "Magnifyall js framework",
+    "version": "0.0.1",
+    "devDependencies": {
+        "grunt": "*",
+        "grunt-cli": "*",
+        "grunt-contrib-clean": "*",
+        "grunt-contrib-concat": "*",
+        "grunt-contrib-copy": "*",
+        "grunt-contrib-connect": "*",
+        "grunt-contrib-uglify": "*",
+        "grunt-contrib-watch": "*"
+    }
+}
