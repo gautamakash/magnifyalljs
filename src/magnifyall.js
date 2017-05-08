@@ -372,7 +372,7 @@ var System = function(_settings){
                 _className = _fileArr[_fileArrI];
             }            
         }
-        var _methodRegEx = new RegExp("[^a-zA-Z_.]"+_className+"[ ]{0,}=", "g");
+        var _methodRegEx = new RegExp("([^a-zA-Z_.]|^)"+_className+"[ ]{0,}=", "g");
         _fileString = _fileString.replace(_methodRegEx, "\n"+_filePath+" =");
         
         return _fileString;
@@ -453,7 +453,7 @@ var System = function(_settings){
         _aspectString += ' var _system = "'+_instance.name+'"; \n';
         _aspectString += ' this.__UID = this.__getSystem().getUID(); \n';
         _aspectString += '  this.__getSystem().registerObject(this); \n';
-        var _aspectRegex = new RegExp("function[ ]{0,}(.*){", "");
+        var _aspectRegex = new RegExp("function[ ]{0,}([^{]*){", "");
         var _functionArr = _fileString.match(_aspectRegex);
         var _preFunctionString = _fileString.substring(0,_functionArr.index+_functionArr['0'].length);        
         var _postFunctionString = _fileString.substring(_functionArr.index+_functionArr['0'].length, _fileString.length);
