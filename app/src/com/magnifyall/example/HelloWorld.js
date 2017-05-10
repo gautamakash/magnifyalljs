@@ -18,8 +18,10 @@ HelloWorld = function(_config){
     this.greet = function(){
         return "hello "+this.name;
     };
-    this.goNext = function(_url){
-        window.location = _url;
+    this.goNext = function(_route){
+      if(router){
+        router.loadRoute(_route);
+      }
     };
     this.__setTemplate([{
         div: {
@@ -30,7 +32,11 @@ HelloWorld = function(_config){
                             {
                                 a:{
                                     prop:{
-                                        href: '#/'
+                                        href: 'javascript:void(0);',
+                                        onclick: {
+                                          fn: "goNext",
+                                          arg:["home"]
+                                        }
                                     },
                                     childs:[
                                         {'#text': 'Home'}
@@ -40,7 +46,11 @@ HelloWorld = function(_config){
                             {
                                 a:{
                                     prop:{
-                                        href: '#/about-us'
+                                        href: 'javascript:void(0);',
+                                        onclick: {
+                                          fn: "goNext",
+                                          arg:["about-us"]
+                                        }
                                     },
                                     childs:[
                                         {'#text': 'About Us'}
