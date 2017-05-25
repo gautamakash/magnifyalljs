@@ -1,7 +1,7 @@
 {
     "name": "magnifyall",
     "description": "Magnifyall js framework",
-    "version": "0.1.0-rc",
+    "version": "1.0.0-rc",
     "devDependencies": {
         "grunt": "*",
         "grunt-cli": "*",

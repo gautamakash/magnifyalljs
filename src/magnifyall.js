@@ -83,6 +83,25 @@ var System = function(_settings){
         eval(_fileString);
         return this;
     };
+
+    /**
+     * public Method
+     * Shedule Import
+     */
+    this.sheduleImport = function(_package){
+        this.getFile(_extractPath(_package, this.src)+".js", false, function(_fileString){
+            if(_fileString){
+                _fileString = _initiatePackage(_package, _fileString);
+                if(_instance.aopConfiguration){
+                    _fileString = _initiateAspect(_fileString, _package);
+                }
+                _fileString = _initiateProxy(_fileString, _instance.lib, _instance.src, _package, _instance);        
+                eval(_fileString);
+            }
+        });
+        return this;
+    };
+
     
     
     
@@ -104,23 +123,18 @@ var System = function(_settings){
     
     
     // return/create Bean which is configure in beanFactory, must has package and id of pojo
-    this.getBean = function(_class, _id){
+    this.getBean = function(_class, _query){
         if(this.beanFactoryConfiguration && this.beanFactoryConfiguration[_class]){
             this.import(_class);
             var _beanConfig = this.beanFactoryConfiguration[_class];
             var _data = {};
-            var _dataUrl = false;
-            if(_beanConfig.fetch){
-                _dataUrl = _beanConfig.fetch;
-                _dataUrl = _dataUrl.replace("{{id}}", _id);
-                var _dataString = this.getFile(_dataUrl, true);
-                _data = JSON.parse(_dataString);
-                _data.__url = _dataUrl;
+            var _dataId = _class+JSON.stringify(_query).replace(/{|}|"|:/g , "_");
+            if(this.beans[_dataId]){
+                return this.beans[_dataId];
             }
-            if(_dataUrl && this.beans[_dataUrl]){
-                return this.beans[_dataUrl];
-            }else if(this.beans[_class+'_'+_id]){
-                return this.beans[_class+'_'+_id];
+            if(_beanConfig.sync && _beanConfig.sync.fetchService){
+                var _dataString = _beanConfig.sync.fetchService(_query);
+                _data = JSON.parse(_dataString);
             }
             var _classObj = window;
             var _classArr = _class.split('.');
@@ -128,14 +142,68 @@ var System = function(_settings){
                 _classObj = _classObj[_classArr[_classI]];
             }
             var _bean = new _classObj(_data);
-            if(_dataUrl){
-                this.beans[_dataUrl] = _bean;
-            }else{
-                this.beans[_class+'_'+_id] = _bean;
-            }
+            this.beans[_dataId] = _bean;
+            this.beans[_bean.__UID] = _bean;
             return _bean;
         }
     };
+
+    this.onGetBean = function(_class, _query, _callback){
+        if(this.beanFactoryConfiguration && this.beanFactoryConfiguration[_class]){
+            this.import(_class);
+            var _beanConfig = this.beanFactoryConfiguration[_class];
+            var _data = {};
+            var _dataId = _class+JSON.stringify(_query).replace(/{|}|"|:/g , "_");
+            if(this.beans[_dataId]){
+                _callback(this.beans[_dataId]);
+                return;
+            }
+            
+            if(_beanConfig.async && _beanConfig.async.fetchService){
+                _beanConfig.async.fetchService(_query, function(_dataString){
+                    _data = JSON.parse(_dataString);
+                    var _classObj = window;
+                    var _classArr = _class.split('.');
+                    for(var _classI = 0; _classI < _classArr.length; _classI++){
+                        _classObj = _classObj[_classArr[_classI]];
+                    }
+                    var _bean = new _classObj(_data);
+                    _instance.beans[_dataId] = _bean;
+                    _instance.beans[_bean.__UID] = _bean;
+                    _callback(_bean);
+                })
+            }
+        }
+    }
+
+    // update bean
+    this.updateBean = function(_obj){
+        var _className = _obj.__getClassName();
+        if(this.beanFactoryConfiguration && this.beanFactoryConfiguration[_className]){
+            var _beanConfig = this.beanFactoryConfiguration[_className];
+            if(_beanConfig.sync && _beanConfig.sync.updateService){
+                return _beanConfig.sync.updateService(_obj);
+            }
+        }
+        return false;
+    }
+    
+    // update bean
+    this.onUpdateBean = function(_obj, _callback){
+        var _className = _obj.__getClassName();
+        if(this.beanFactoryConfiguration && this.beanFactoryConfiguration[_className]){
+            var _beanConfig = this.beanFactoryConfiguration[_className];
+            if(_beanConfig.async && _beanConfig.async.updateService){
+                _beanConfig.async.updateService(_obj, _callback);
+                return;
+            }else{
+                _callback(false);
+                return;
+            }
+        }
+        _callback(false);
+        return;
+    }
     
     // Create new thread and execute code.
     this.run = function(_fnc){
@@ -164,6 +232,33 @@ var System = function(_settings){
         }
         return _returnString;
     };
+
+    /* 
+    return String value from response take file path, should cache, callback
+    */
+    this.getAsyncFile = function(_filePath, uncached, _callback){
+        var _returnString = "";
+        if(!uncached && _instance.__cache[_filePath]){
+            _returnString = _instance.__cache[_filePath];
+            _callback(_returnString);
+        }else{
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    _returnString =  this.responseText;
+                    _callback(_returnString);
+                }else{
+                    _callback(false);
+                }
+            };
+            xhttp.open("GET", _filePath, true);
+            xhttp.send();
+            if(!uncached){
+                _instance.__cache[_filePath] = _returnString;
+            }
+        }
+    };
+
     /**
      * Template Processor
      */
@@ -448,6 +543,7 @@ var System = function(_settings){
         var _aspectString = _instance.getFile(_libPath+"/defaultAspect.js", false, _instance);
         var _currentPackage = _filePath;
         var _currentPath = _extractPath(_filePath, _basePath);
+        _aspectString += '\n';
         _aspectString += ' var _currentPackage = "'+_currentPackage+'"; \n';
         _aspectString += ' var _currentPath = "'+_currentPath+'"; \n';
         _aspectString += ' var _system = "'+_instance.name+'"; \n';

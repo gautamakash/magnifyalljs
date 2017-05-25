@@ -29,6 +29,10 @@ this.__getSystem = function(){
 this.__getCurrentPath = function(){
     return _currentPath;
 }
+// get data className
+this.__getClassName = function(){
+    return _currentPackage;
+}
 // listners, subscribers
 var _onChangeListners = {};
 // Method to subscribe with unique id
