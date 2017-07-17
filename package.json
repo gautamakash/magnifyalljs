@@ -1,15 +1,16 @@
 {
-    "name": "magnifyall",
-    "description": "Magnifyall js framework",
-    "version": "1.0.0-rc",
-    "devDependencies": {
-        "grunt": "*",
-        "grunt-cli": "*",
-        "grunt-contrib-clean": "*",
-        "grunt-contrib-concat": "*",
-        "grunt-contrib-copy": "*",
-        "grunt-contrib-connect": "*",
-        "grunt-contrib-uglify": "*",
-        "grunt-contrib-watch": "*"
-    }
+  "name": "magnifyall",
+  "description": "Magnifyall js framework",
+  "version": "1.0.0-rc",
+  "devDependencies": {},
+  "dependencies": {
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-connect": "^1.0.2",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^3.0.1",
+    "grunt-contrib-watch": "^1.0.0"
+  }
 }
