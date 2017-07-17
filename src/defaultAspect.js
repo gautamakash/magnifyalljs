@@ -106,6 +106,22 @@ this.__unbindElement = function(){
 this.__getBindElement = function(){
     return __bindElement;
 }
+this.__queryChildElements = function(_query){
+    var _retObj = [];
+    if(__bindElement && __bindElement.length && __bindElement.length > 0){
+        for(var _eleIndex = 0; _eleIndex< __bindElement.length; _eleIndex++){
+            if(_eleIndex === 0){
+                _retObj = __bindElement[_eleIndex].querySelectorAll(_query);
+            }else{
+                var _nodeList = __bindElement[_eleIndex].querySelectorAll(_query);
+                for(var _nodeListIndex = 0; _nodeListIndex < _nodeList.length; _nodeListIndex++){
+                    _retObj.push(_nodeList[_nodeListIndex]);
+                }
+            }
+        }
+    }
+    return _retObj;
+}
 this.__getReference = function(){
     var returnString = '__systems.';
     returnString += _system;
