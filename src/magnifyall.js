@@ -213,7 +213,7 @@ var System = function(_settings){
     /* 
     return String value from response take file path, should cache, system
     */
-    this.getFile = function(_filePath, uncached){
+    this.getFile = function(_filePath, uncached, _callback){
         var _returnString = "";
         if(!uncached && _instance.__cache[_filePath]){
             _returnString = _instance.__cache[_filePath];
@@ -229,6 +229,9 @@ var System = function(_settings){
             if(!uncached){
                 _instance.__cache[_filePath] = _returnString;
             }
+        }
+        if(_callback && typeof _callback == 'function'){
+            _callback(_returnString);
         }
         return _returnString;
     };
