@@ -44,9 +44,9 @@ this.unsubscribe = function(_id){
     delete _onChangeListners[_id];
 }
 // trigger update to object and trigger change event to subscriber
-this.__update = function(){
+this.__update = function(_disableRender){
     __change(this);
-    if(__bindElement){
+    if(__bindElement && !_disableRender){
         this.__render(false);
     }
 }
