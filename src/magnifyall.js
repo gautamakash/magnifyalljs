@@ -367,8 +367,12 @@ var System = function(_settings){
                                 }
                                 _args.push(_arg);
                             }*/
-                            var _fn = this.getDataValue(_data, _bindEvent.fn);
-                            _retObj.addEventListener(_propName.substring(2,_propName.length), function(){
+                           //var _fn = this.getDataValue(_data, _bindEvent.fn);
+                            _data.__events = _data.__events || {};
+                            _data.__events[_propName] = _bindEvent.fn;
+                            _retObj.addEventListener(_propName.substring(2,_propName.length), function(e){
+                                var _fn = _instanceTemplateProcessor.getDataValue(_data, _data.__events['on'+e.type]);
+
                                 var _args = [];
                                 for(var _argIndex = 0; _argIndex < _bindEvent.arg.length; _argIndex++){
                                     var _arg = _bindEvent.arg[_argIndex];
