@@ -111,12 +111,10 @@ this.__queryChildElements = function(_query){
     if(__bindElement && __bindElement.length && __bindElement.length > 0){
         for(var _eleIndex = 0; _eleIndex< __bindElement.length; _eleIndex++){
             if(_eleIndex === 0){
-                _retObj = __bindElement[_eleIndex].querySelectorAll(_query);
+                _retObj = Array.prototype.slice.call(__bindElement[_eleIndex].querySelectorAll(_query));
             }else{
-                var _nodeList = __bindElement[_eleIndex].querySelectorAll(_query);
-                for(var _nodeListIndex = 0; _nodeListIndex < _nodeList.length; _nodeListIndex++){
-                    _retObj.push(_nodeList[_nodeListIndex]);
-                }
+                var _nodeList = Array.prototype.slice.call(__bindElement[_eleIndex].querySelectorAll(_query));
+                _retObj = (_retObj.length>0)?_retObj.concat(_nodeList):_nodeList;
             }
         }
     }
